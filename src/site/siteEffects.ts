@@ -258,7 +258,7 @@ export function initSite(): () => void {
     [...t].forEach((c) => {
       const s = document.createElement("span");
       s.className = "ch";
-      s.textContent = c;
+      s.textContent = c === " " ? " " : c; // a plain space collapses inside inline-block spans
       el.appendChild(s);
     });
   };
@@ -281,10 +281,11 @@ export function initSite(): () => void {
   });
   const setWord = (w: string) => {
     dest.textContent = "";
+    dest.style.setProperty("--len", String(w.length)); // long names (MAHABALESHWAR) shrink to fit — see site.css
     [...w].forEach((c) => {
       const s = document.createElement("span");
       s.className = "ch";
-      s.textContent = c;
+      s.textContent = c === " " ? " " : c;
       dest.appendChild(s);
     });
   };

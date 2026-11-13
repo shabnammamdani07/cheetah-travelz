@@ -492,6 +492,8 @@ a.chip:hover {
   display: block;
   white-space: nowrap;
   font: 400 clamp(46px, 12.5vw, 220px)/0.85 var(--display);
+  /* --len = letters in the current destination; long names shrink so they never overflow. */
+  font-size: max(30px, min(220px, 12.5vw, calc(118vw / var(--len, 8))));
   color: #fff;
   letter-spacing: 0.01em;
   text-shadow: 0 20px 60px rgba(7, 28, 61, 0.45);

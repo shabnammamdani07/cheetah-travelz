@@ -278,6 +278,7 @@ function Hero() {
           <span
             className="hero__dest"
             id="heroDest"
+            style={css({ "--len": "8" })}
             data-words={JSON.stringify(DESTINATIONS.map((d) => [d.word, img(d.hero)]))}
           >
             ANYWHERE
