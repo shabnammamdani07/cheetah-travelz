@@ -81,21 +81,35 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Cheetah Travelz" },
+      {
+        name: "description",
+        content:
+          "Cheetah Travelz — solo & private group trips from Mumbai, plus chauffeur-driven cars & buses across India.",
+      },
+      { name: "author", content: "Cheetah Travelz" },
+      { property: "og:title", content: "Cheetah Travelz" },
+      {
+        property: "og:description",
+        content:
+          "Solo & group trips from Mumbai to Goa, Daman, Mahabaleshwar, Lonavala and beyond.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
         rel: "stylesheet",
         href: appCss,
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", href: "/favicon.png", type: "image/png" },
+      // Brand fonts (Anton display, Poppins body, Caveat script) used by the site and admin.
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Anton&family=Poppins:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Caveat:wght@700&display=swap",
+      },
     ],
   }),
   shellComponent: RootShell,
