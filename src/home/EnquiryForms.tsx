@@ -9,14 +9,14 @@ import { track } from "./track";
  * Leads are saved through the existing enquiry endpoint, which stores them in the admin panel's
  * Enquiries list (the team's notification channel — new leads show a badge there).
  */
-type Status = "idle" | "sending" | "done" | "error";
-const PHONE_PATTERN = "[+0-9][0-9 \\-]{6,19}";
+export type Status = "idle" | "sending" | "done" | "error";
+export const PHONE_PATTERN = "[+0-9][0-9 \\-]{6,19}";
 const today = () => new Date().toISOString().slice(0, 10);
 
-const SEND_FAILED =
+export const SEND_FAILED =
   "We couldn't send your enquiry right now. Your details are still here — please try again, or WhatsApp us.";
 
-async function saveLead(payload: Record<string, string>) {
+export async function saveLead(payload: Record<string, string>) {
   let r: Response;
   try {
     r = await fetch("/api/public/enquiry", {
@@ -31,13 +31,13 @@ async function saveLead(payload: Record<string, string>) {
   if (!r.ok) throw new Error(r.status < 500 && j.error ? j.error : SEND_FAILED);
 }
 
-const lines = (pairs: [string, FormDataEntryValue | null][]) =>
+export const lines = (pairs: [string, FormDataEntryValue | null][]) =>
   pairs
     .filter(([, v]) => v !== null && String(v).trim() !== "")
     .map(([k, v]) => `${k}: ${String(v).trim()}`)
     .join("\n");
 
-function Done({ text, onReset }: { text: string; onReset: () => void }) {
+export function Done({ text, onReset }: { text: string; onReset: () => void }) {
   return (
     <div className="ct-done" role="status" aria-live="polite">
       <span className="ct-done__tick">

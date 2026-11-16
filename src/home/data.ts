@@ -13,7 +13,22 @@ export const WHATSAPP = `https://wa.me/${CONTACT.phoneRaw}?text=${encodeURICompo
   "Hi Cheetah Travelz! I'd like to know more about your trips.",
 )}`;
 
-/* Section anchors on the homepage. Step 4 swaps service links to their own pages. */
+/* Page URLs (Step 4). Header links, service cards and final CTAs open these pages. */
+export const ROUTES = {
+  home: "/",
+  trips: "/group-trips",
+  holidays: "/customized-holidays",
+  transport: "/cars-and-buses",
+  about: "/about",
+  contact: "/contact",
+  blog: "/blog",
+  reviews: "/reviews",
+  account: "/account",
+  terms: "/terms",
+  refund: "/cancellation-refund-policy",
+} as const;
+
+/* Section anchors on the homepage — the hero buttons scroll to these. */
 export const ANCHOR = {
   trips: "#group-trips",
   holidays: "#holidays",
@@ -29,7 +44,7 @@ export const SERVICES = [
     title: "Solo Group Trips",
     text: "Come solo. Meet like-minded travellers. Leave with new friends.",
     cta: "Explore Group Trips",
-    href: ANCHOR.trips,
+    href: ROUTES.trips,
     image: "g-waterfall.jpg",
     alt: "Cheetah Travelz group in life jackets at a waterfall on a group trip",
     event: "cta_group_trips_click",
@@ -40,7 +55,7 @@ export const SERVICES = [
     title: "Customized Holidays",
     text: "Your plans. Your people. Your holiday.",
     cta: "Plan Your Holiday",
-    href: ANCHOR.holidays,
+    href: ROUTES.holidays,
     image: "g-boat.jpg",
     alt: "Friends relaxing on a boat during a private holiday",
     event: "cta_holiday_click",
@@ -51,7 +66,7 @@ export const SERVICES = [
     title: "Cars & Buses",
     text: "Chauffeur-driven travel, made easy.",
     cta: "Get a Vehicle Quote",
-    href: ANCHOR.transport,
+    href: ROUTES.transport,
     image: "g-bus.jpg",
     alt: "Travellers on board a Cheetah Travelz AC bus with mood lighting",
     event: "cta_transport_click",
@@ -91,7 +106,7 @@ export const DEPARTURES: Departure[] = [
     departure: "Mumbai departure",
     image: "beach-pan.jpg",
     alt: "Goa beach with palm trees and fishing boats",
-    href: "/goa-trip",
+    href: "/trips/goa-nov-2026",
   },
 ];
 

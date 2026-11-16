@@ -9,13 +9,17 @@ import {
   JOURNEYS,
   MEMORIES,
   REVIEWS,
+  ROUTES,
   SERVICES,
   VEHICLES,
   WHATSAPP,
   img,
   upcomingTrips,
 } from "./data";
+import { Link } from "@tanstack/react-router";
+
 import { HolidayForm, VehicleForm } from "./EnquiryForms";
+import { SiteFooter, SiteHeader } from "./Layout";
 import { Icon, VehicleArt, WhatsAppIcon } from "./Icon";
 import { track } from "./track";
 
@@ -35,126 +39,6 @@ const inr = (n: number) => "₹" + n.toLocaleString("en-IN");
 function scrollToId(hash: string) {
   const el = document.querySelector(hash);
   if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-}
-
-/* ---------------- 1 · Header + mobile menu ---------------- */
-const NAV = [
-  { label: "Home", href: "#top" },
-  { label: "Solo Group Trips", href: ANCHOR.trips, service: true },
-  { label: "Customized Holidays", href: ANCHOR.holidays, service: true },
-  { label: "Cars & Buses", href: ANCHOR.transport, service: true },
-  { label: "About Us", href: ANCHOR.about },
-  { label: "Contact Us", href: ANCHOR.contact },
-];
-
-function Header() {
-  const [open, setOpen] = useState(false);
-  const btn = useRef<HTMLButtonElement>(null);
-  const firstLink = useRef<HTMLAnchorElement>(null);
-
-  useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
-    if (open) firstLink.current?.focus();
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && open) {
-        setOpen(false);
-        btn.current?.focus();
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
-    };
-  }, [open]);
-
-  return (
-    <header className="ct-header">
-      <div className="ct-wrap ct-header__row">
-        <a href="#top" className="ct-logo" aria-label="Cheetah Travelz — home">
-          <img src={img("logo.png")} alt="" width={40} height={40} />
-          <span>
-            CHEETAH <b>TRAVELZ</b>
-          </span>
-        </a>
-        <nav className="ct-nav" aria-label="Main">
-          {NAV.slice(1).map((n) => (
-            <a key={n.label} href={n.href} className={n.service ? "is-service" : undefined}>
-              {n.label}
-            </a>
-          ))}
-        </nav>
-        <a
-          className="ct-btn ct-btn--wa ct-header__wa"
-          href={WHATSAPP}
-          target="_blank"
-          rel="noopener"
-          onClick={() => track("whatsapp_click", { location: "header" })}
-        >
-          <WhatsAppIcon size={18} /> <span>WhatsApp</span>
-        </a>
-        <button
-          ref={btn}
-          className="ct-burger"
-          aria-label={open ? "Close menu" : "Open menu"}
-          aria-expanded={open}
-          aria-controls="ct-menu"
-          onClick={() => setOpen(!open)}
-        >
-          <Icon name={open ? "close" : "menu"} size={26} />
-        </button>
-      </div>
-
-      <div id="ct-menu" className={`ct-menu ${open ? "is-open" : ""}`} hidden={!open}>
-        <div className="ct-menu__head">
-          <span className="ct-logo ct-logo--light">
-            <img src={img("logo.png")} alt="" width={40} height={40} />
-            <span>
-              CHEETAH <b>TRAVELZ</b>
-            </span>
-          </span>
-          <button
-            className="ct-burger ct-burger--light"
-            aria-label="Close menu"
-            onClick={() => setOpen(false)}
-          >
-            <Icon name="close" size={26} />
-          </button>
-        </div>
-        <nav aria-label="Mobile">
-          {NAV.map((n, i) => (
-            <a
-              key={n.label}
-              ref={i === 0 ? firstLink : undefined}
-              href={n.href}
-              className={n.service ? "is-service" : undefined}
-              onClick={() => setOpen(false)}
-            >
-              {n.label}
-              <Icon name="chevron" size={20} />
-            </a>
-          ))}
-        </nav>
-        <div className="ct-menu__foot">
-          <a
-            className="ct-btn ct-btn--white ct-btn--block"
-            href={WHATSAPP}
-            target="_blank"
-            rel="noopener"
-            onClick={() => track("whatsapp_click", { location: "menu" })}
-          >
-            <span className="ct-wa-dot">
-              <WhatsAppIcon size={18} />
-            </span>{" "}
-            Enquire on WhatsApp
-          </a>
-          <a className="ct-menu__social" href={CONTACT.instagram} target="_blank" rel="noopener">
-            <Icon name="instagram" size={18} /> Instagram
-          </a>
-        </div>
-      </div>
-    </header>
-  );
 }
 
 /* ---------------- 2 · Hero ---------------- */
@@ -236,8 +120,8 @@ function Services() {
         <div className="ct-services">
           {SERVICES.map((s) => (
             <article key={s.key} className="ct-card ct-service">
-              <a
-                href={s.href}
+              <Link
+                to={s.href}
                 className="ct-card__hit"
                 aria-label={`${s.title} — ${s.cta}`}
                 onClick={() => track(s.event, { location: "service_card" })}
@@ -304,25 +188,35 @@ function UpcomingTrips() {
                     {t.ageGroup && <span>Age group: {t.ageGroup}</span>}
                     {t.seats !== undefined && <span>{t.seats} seats left</span>}
                   </div>
-                  <a
-                    href={t.href}
+                  <Link
+                    to="/trips/$slug"
+                    params={{ slug: t.slug }}
                     className="ct-btn ct-btn--outline ct-btn--block"
                     onClick={() => track("trip_detail_click", { trip: t.slug })}
                   >
                     View Details
-                  </a>
+                  </Link>
                 </div>
               </article>
             ))}
           </div>
         )}
+        <div className="ct-center">
+          <Link
+            to="/group-trips"
+            className="ct-link ct-link--caps"
+            onClick={() => track("cta_group_trips_click", { location: "view_all" })}
+          >
+            View All Group Trips
+          </Link>
+        </div>
       </div>
     </section>
   );
 }
 
 /* ---------------- 5 · Customized Holidays ---------------- */
-function Holidays() {
+export function Holidays({ compact = false }: { compact?: boolean } = {}) {
   const [destination, setDestination] = useState("");
   const formRef = useRef<HTMLFormElement>(null);
   const focusForm = () => {
@@ -336,32 +230,41 @@ function Holidays() {
     );
   };
   return (
-    <section id="holidays" className="ct-section" aria-labelledby="holidays-title">
+    <section
+      id="holidays"
+      className="ct-section"
+      aria-labelledby={compact ? undefined : "holidays-title"}
+      aria-label={compact ? "Destination inspiration and holiday enquiry" : undefined}
+    >
       <div className="ct-wrap ct-split">
         <div>
-          <div className="ct-banner">
-            <img
-              src={img("g-boat.jpg")}
-              alt="Friends enjoying a private boat ride on holiday"
-              loading="lazy"
-            />
-            <span className="ct-chip ct-chip--orange">Customized Holidays</span>
-          </div>
-          <h2 id="holidays-title" className="ct-h2 ct-mt">
-            Your Dates. Your Destination. Your Kind of Holiday.
-          </h2>
-          <p className="ct-lead">
-            From romantic escapes to family vacations and private group getaways, we create holidays
-            around your preferences.
-          </p>
-          <ul className="ct-chips" aria-label="Who it's for">
-            {AUDIENCES.map((a) => (
-              <li key={a} className="ct-chip">
-                {a}
-              </li>
-            ))}
-          </ul>
-          <p className="ct-eyebrow ct-mt">Destination inspiration</p>
+          {!compact && (
+            <>
+              <div className="ct-banner">
+                <img
+                  src={img("g-boat.jpg")}
+                  alt="Friends enjoying a private boat ride on holiday"
+                  loading="lazy"
+                />
+                <span className="ct-chip ct-chip--orange">Customized Holidays</span>
+              </div>
+              <h2 id="holidays-title" className="ct-h2 ct-mt">
+                Your Dates. Your Destination. Your Kind of Holiday.
+              </h2>
+              <p className="ct-lead">
+                From romantic escapes to family vacations and private group getaways, we create
+                holidays around your preferences.
+              </p>
+              <ul className="ct-chips" aria-label="Who it's for">
+                {AUDIENCES.map((a) => (
+                  <li key={a} className="ct-chip">
+                    {a}
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+          <p className={compact ? "ct-eyebrow" : "ct-eyebrow ct-mt"}>Destination inspiration</p>
           <div className="ct-dests">
             {DESTINATIONS.map((d) => (
               <button
@@ -405,7 +308,7 @@ function Holidays() {
 }
 
 /* ---------------- 6 · Cars & Buses ---------------- */
-function Transport() {
+export function Transport({ compact = false }: { compact?: boolean } = {}) {
   const [vehicle, setVehicle] = useState("");
   const formRef = useRef<HTMLFormElement>(null);
   const focusForm = () => {
@@ -422,18 +325,25 @@ function Transport() {
     <section
       id="transport"
       className="ct-section ct-section--navy"
-      aria-labelledby="transport-title"
+      aria-labelledby={compact ? undefined : "transport-title"}
+      aria-label={compact ? "Vehicles and quote form" : undefined}
     >
       <div className="ct-wrap ct-split">
         <div>
-          <p className="ct-eyebrow">Cars &amp; Buses</p>
-          <h2 id="transport-title" className="ct-h2 ct-h2--light">
-            Your Journey Deserves a Comfortable Ride.
-          </h2>
-          <p className="ct-lead ct-lead--light">
-            From private city transfers to outstation journeys and group transportation, travel
-            comfortably with our chauffeur-driven vehicles.
-          </p>
+          {compact ? (
+            <p className="ct-eyebrow">Choose a vehicle</p>
+          ) : (
+            <>
+              <p className="ct-eyebrow">Cars &amp; Buses</p>
+              <h2 id="transport-title" className="ct-h2 ct-h2--light">
+                Your Journey Deserves a Comfortable Ride.
+              </h2>
+              <p className="ct-lead ct-lead--light">
+                From private city transfers to outstation journeys and group transportation, travel
+                comfortably with our chauffeur-driven vehicles.
+              </p>
+            </>
+          )}
           <div className="ct-vehicles">
             {VEHICLES.map((v) => (
               <button
@@ -511,7 +421,7 @@ function Why() {
 }
 
 /* ---------------- 8 · Our Travel Memories ---------------- */
-function Memories() {
+export function Memories() {
   return (
     <section className="ct-section" aria-labelledby="memories-title">
       <div className="ct-wrap">
@@ -616,6 +526,13 @@ function Reviews() {
           >
             <Icon name="star" size={18} /> Read Google Reviews
           </a>
+          <Link
+            to="/reviews"
+            className="ct-btn ct-btn--outline"
+            onClick={() => track("reviews_click", { target: "all_reviews" })}
+          >
+            View All Reviews
+          </Link>
         </div>
       </div>
     </section>
@@ -645,7 +562,7 @@ function About() {
           </p>
           <div className="ct-trio">
             {SERVICES.map((s) => (
-              <a key={s.key} href={s.href} className="ct-trio__tile">
+              <Link key={s.key} to={s.href} className="ct-trio__tile">
                 <Icon name={SERVICE_ICON[s.key] ?? "users"} size={22} />
                 <span>
                   {s.key === "trips"
@@ -654,9 +571,16 @@ function About() {
                       ? "Custom holidays"
                       : "Cars & buses"}
                 </span>
-              </a>
+              </Link>
             ))}
           </div>
+          <Link
+            to="/about"
+            className="ct-btn ct-btn--outline ct-btn--block ct-mt"
+            onClick={() => track("about_click")}
+          >
+            Get to Know Us
+          </Link>
         </div>
       </div>
     </section>
@@ -668,19 +592,19 @@ function FinalCta() {
   const buttons = [
     {
       label: "Explore Group Trips",
-      href: ANCHOR.trips,
+      href: ROUTES.trips,
       icon: "users",
       event: "final_cta_group_trips",
     },
     {
       label: "Plan a Custom Holiday",
-      href: ANCHOR.holidays,
+      href: ROUTES.holidays,
       icon: "compass",
       event: "final_cta_holiday",
     },
     {
       label: "Get a Vehicle Quote",
-      href: ANCHOR.transport,
+      href: ROUTES.transport,
       icon: "car",
       event: "final_cta_transport",
     },
@@ -697,16 +621,16 @@ function FinalCta() {
         </p>
         <div className="ct-final__ctas">
           {buttons.map((b) => (
-            <a
+            <Link
               key={b.label}
-              href={b.href}
+              to={b.href}
               className="ct-btn ct-btn--primary ct-btn--hero"
               onClick={() => track(b.event)}
             >
               <Icon name={b.icon} size={20} />
               <span>{b.label}</span>
               <Icon name="chevron" size={18} />
-            </a>
+            </Link>
           ))}
         </div>
       </div>
@@ -714,101 +638,10 @@ function FinalCta() {
   );
 }
 
-/* ---------------- 12 · Footer ---------------- */
-function Footer() {
-  return (
-    <footer id="contact" className="ct-footer">
-      <div className="ct-wrap ct-footer__grid">
-        <div>
-          <span className="ct-logo ct-logo--light">
-            <img src={img("logo.png")} alt="" width={44} height={44} />
-            <span>
-              CHEETAH <b>TRAVELZ</b>
-            </span>
-          </span>
-          <p className="ct-footer__tag">
-            Making every journey memorable through group adventures, personalised holidays and
-            private transportation.
-          </p>
-        </div>
-        <div>
-          <h3>Quick links</h3>
-          <ul>
-            {NAV.map((n) => (
-              <li key={n.label}>
-                <a href={n.href}>{n.label}</a>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div>
-          <h3>Contact</h3>
-          <ul>
-            <li>
-              <a
-                href={WHATSAPP}
-                target="_blank"
-                rel="noopener"
-                onClick={() => track("whatsapp_click", { location: "footer" })}
-              >
-                <WhatsAppIcon size={16} /> WhatsApp
-              </a>
-            </li>
-            <li>
-              <a href={`tel:+${CONTACT.phoneRaw}`}>
-                <Icon name="phone" size={16} /> {CONTACT.phone}
-              </a>
-            </li>
-            <li>
-              <a
-                href={CONTACT.instagram}
-                target="_blank"
-                rel="noopener"
-                onClick={() => track("social_click", { network: "instagram" })}
-              >
-                <Icon name="instagram" size={16} /> Instagram
-              </a>
-            </li>
-            <li>
-              <a
-                href={CONTACT.google}
-                target="_blank"
-                rel="noopener"
-                onClick={() => track("social_click", { network: "google" })}
-              >
-                <Icon name="star" size={16} /> Google Reviews
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div>
-          <h3>Policies</h3>
-          <ul>
-            <li>
-              <a href="/goa-trip#terms">Terms &amp; Conditions</a>
-            </li>
-            <li>
-              <a href="/goa-trip#terms">Cancellation &amp; Refund Policy</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-      <div className="ct-wrap ct-footer__bottom">
-        <p>© {new Date().getFullYear()} Cheetah Travelz. All rights reserved. · MSME Registered</p>
-        <p className="ct-credit">
-          Website created by Shabnam Mamdani. To get in touch, contact Shabnam Mamdani: Phone:{" "}
-          <a href="tel:84452033656">84452033656</a> · Email:{" "}
-          <a href="mailto:shabnammamdani07@gmail.com">shabnammamdani07@gmail.com</a>
-        </p>
-      </div>
-    </footer>
-  );
-}
-
 export default function HomePage() {
   return (
     <div className="ct" id="top">
-      <Header />
+      <SiteHeader />
       <main>
         <Hero />
         <Services />
@@ -821,7 +654,7 @@ export default function HomePage() {
         <About />
         <FinalCta />
       </main>
-      <Footer />
+      <SiteFooter />
     </div>
   );
 }
