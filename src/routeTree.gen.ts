@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as GoaTripRouteImport } from './routes/goa-trip'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
 import { Route as AdminBillingRouteImport } from './routes/admin.billing'
@@ -31,6 +32,11 @@ const IndexRoute = IndexRouteImport.update({
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GoaTripRoute = GoaTripRouteImport.update({
+  id: '/goa-trip',
+  path: '/goa-trip',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -92,6 +98,7 @@ const AdminWebsiteRoute = AdminWebsiteRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/goa-trip': typeof GoaTripRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/billing': typeof AdminBillingRoute
   '/admin/bookings': typeof AdminBookingsRoute
@@ -106,6 +113,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/goa-trip': typeof GoaTripRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/billing': typeof AdminBillingRoute
   '/admin/bookings': typeof AdminBookingsRoute
@@ -122,6 +130,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/goa-trip': typeof GoaTripRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/billing': typeof AdminBillingRoute
   '/admin/bookings': typeof AdminBookingsRoute
@@ -139,6 +148,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/goa-trip'
     | '/admin/analytics'
     | '/admin/billing'
     | '/admin/bookings'
@@ -153,6 +163,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/goa-trip'
     | '/admin/analytics'
     | '/admin/billing'
     | '/admin/bookings'
@@ -168,6 +179,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
+    | '/goa-trip'
     | '/admin/analytics'
     | '/admin/billing'
     | '/admin/bookings'
@@ -184,6 +196,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
+  GoaTripRoute: typeof GoaTripRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -200,6 +213,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/goa-trip': {
+      id: '/goa-trip'
+      path: '/goa-trip'
+      fullPath: '/goa-trip'
+      preLoaderRoute: typeof GoaTripRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -315,6 +335,7 @@ const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
+  GoaTripRoute: GoaTripRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

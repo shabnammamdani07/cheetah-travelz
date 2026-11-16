@@ -1,28 +1,31 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import SiteHome from "@/site/Home";
-import siteCss from "@/site/site.css?url";
+import HomePage from "@/home/HomePage";
+import homeCss from "@/home/home.css?url";
 
-// The public Cheetah Travelz website. Copy (prices, dates, itinerary, reviews…) lives in
-// src/site/content.ts; the look lives in src/site/site.css; animations in src/site/siteEffects.ts.
+// Cheetah Travelz homepage — three equal services: Solo Group Trips, Customized Holidays, Cars & Buses.
+// Built from "Homepage Design & Mobile Wireframe" v1.0. Content/data: src/home/data.ts (verified data only).
 // The home route ships no og:image, so serve-time hosting can inject the project's social preview.
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Cheetah Travelz — Solo & group trips from Mumbai" },
+      { title: "Cheetah Travelz — Group Trips, Customized Holidays & Cars and Buses" },
       {
         name: "description",
         content:
-          "Cheetah Travelz — MSME registered solo & private group trips from Mumbai to Goa, Daman, Mahabaleshwar, Lonavala and anywhere in India, plus chauffeur-driven cars & buses. Next trip: Goa, 21–24 Nov.",
+          "Cheetah Travelz: solo group trips, customized holidays for couples, families and private groups, and chauffeur-driven cars & buses from Mumbai. MSME registered.",
       },
-      { property: "og:title", content: "Cheetah Travelz — We take you everywhere" },
+      { property: "og:title", content: "Cheetah Travelz — Your Journey. Your Way." },
       {
         property: "og:description",
         content:
-          "Solo & group trips to Goa, Daman, Mahabaleshwar, Lonavala and beyond. Next departure: Goa, 21–24 Nov.",
+          "Solo group trips, customized holidays and chauffeur-driven cars & buses — one travel company.",
       },
     ],
-    links: [{ rel: "stylesheet", href: siteCss }],
+    links: [
+      { rel: "stylesheet", href: homeCss },
+      { rel: "preload", as: "image", href: "/assets/img/hero-travel.jpg", fetchPriority: "high" },
+    ],
   }),
-  component: SiteHome,
+  component: HomePage,
 });

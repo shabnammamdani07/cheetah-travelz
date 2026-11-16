@@ -990,7 +990,7 @@ function Book() {
 
 function Terms() {
   return (
-    <section className="terms">
+    <section className="terms" id="terms">
       <div className="wrap">
         <p className="eyebrow">The fine print</p>
         <h2 className="h2 h2--sm">Terms &amp; conditions</h2>
