@@ -38,7 +38,7 @@ const inr = (n: number) => "₹" + n.toLocaleString("en-IN");
 
 function scrollToId(hash: string) {
   const el = document.querySelector(hash);
-  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  if (el) el.scrollIntoView({ behavior: "auto", block: "start" });
 }
 
 /* ---------------- 2 · Hero ---------------- */
@@ -220,7 +220,7 @@ export function Holidays({ compact = false }: { compact?: boolean } = {}) {
   const [destination, setDestination] = useState("");
   const formRef = useRef<HTMLFormElement>(null);
   const focusForm = () => {
-    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    formRef.current?.scrollIntoView({ behavior: "auto", block: "start" });
     window.setTimeout(
       () =>
         formRef.current
@@ -312,7 +312,7 @@ export function Transport({ compact = false }: { compact?: boolean } = {}) {
   const [vehicle, setVehicle] = useState("");
   const formRef = useRef<HTMLFormElement>(null);
   const focusForm = () => {
-    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    formRef.current?.scrollIntoView({ behavior: "auto", block: "start" });
     window.setTimeout(
       () =>
         formRef.current
@@ -470,7 +470,7 @@ function Reviews() {
   const goTo = (i: number) => {
     const el = rail.current;
     const card = el?.children[i] as HTMLElement | undefined;
-    if (el && card) el.scrollTo({ left: card.offsetLeft - el.offsetLeft, behavior: "smooth" });
+    if (el && card) el.scrollTo({ left: card.offsetLeft - el.offsetLeft, behavior: "auto" });
   };
   return (
     <section className="ct-section ct-section--grey" aria-labelledby="reviews-title">

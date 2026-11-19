@@ -34,7 +34,6 @@
 }
 html:has(.ct) {
   scroll-padding-top: calc(var(--ct-header) + 8px);
-  scroll-behavior: smooth;
 }
 .ct *,
 .ct *::before,
@@ -142,9 +141,9 @@ html:has(.ct) {
   letter-spacing: 0.05em;
   text-transform: uppercase;
   transition:
-    background 0.2s,
-    color 0.2s,
-    border-color 0.2s;
+    background-color 150ms ease,
+    color 150ms ease,
+    border-color 150ms ease;
 }
 .ct-btn--primary {
   background: var(--ct-orange);
@@ -551,10 +550,6 @@ html:has(.ct) {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.6s ease;
-}
-.ct-service:hover .ct-service__img img {
-  transform: scale(1.04);
 }
 .ct-service__n {
   position: absolute;
@@ -744,10 +739,6 @@ html:has(.ct) {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.6s ease;
-}
-.ct-dest:hover img {
-  transform: scale(1.06);
 }
 .ct-dest::after {
   content: "";
@@ -1267,15 +1258,6 @@ html:has(.ct) {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  html:has(.ct) {
-    scroll-behavior: auto;
-  }
-  .ct * {
-    transition: none !important;
-  }
-}
-
 /* Tailwind preflight makes svg display:block — keep icons inline next to their text */
 .ct-trip__row span,
 .ct-trip__meta {
@@ -1483,10 +1465,9 @@ html:has(.ct) {
   content: "+";
   font-size: 22px;
   color: var(--ct-orange);
-  transition: transform 0.2s;
 }
 .ct-acc details[open] summary::after {
-  transform: rotate(45deg);
+  content: "−"; /* minus sign: swaps instantly, no rotation */
 }
 .ct-acc p {
   margin: 0 0 14px;
@@ -1977,5 +1958,91 @@ html:has(.ct) {
 @media (max-width: 1023px) {
   .ct-trip-aside {
     order: -1;
+  }
+}
+
+/* =====================================================================
+ * MOTION — only three places move; everything else stays still.
+ * 1. Homepage hero: headline + supporting text fade in once (300 ms).
+ *    The photo and the three CTA buttons are visible and clickable at once.
+ * 2. Trip cards: lift 3px on hover — desktop (mouse) only; phones stay still.
+ * 3. Buttons: quick colour change on hover, subtle press on tap,
+ *    clear keyboard focus ring. WhatsApp buttons never move.
+ * prefers-reduced-motion: no animation or movement, content shown at once.
+ * ===================================================================== */
+
+/* 1 · hero text fade (opacity only — nothing slides) */
+@keyframes ct-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.ct-hero .ct-hero__bar,
+.ct-hero .ct-hero__eyebrow,
+.ct-hero h1,
+.ct-hero .ct-hero__copy {
+  animation: ct-fade-in 300ms ease-out both;
+}
+
+/* 2 · trip card lift — real hover devices only */
+@media (hover: hover) and (pointer: fine) {
+  .ct-trip {
+    transition:
+      transform 150ms ease,
+      box-shadow 150ms ease;
+  }
+  .ct-trip:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px -14px rgba(1, 46, 105, 0.45);
+  }
+}
+
+/* 3 · buttons: hover colours, pressed state, focus ring */
+.ct-btn--white:hover {
+  background: #eef2f8;
+}
+.ct-btn--wa:hover {
+  background: #1ebe5b;
+}
+.ct-btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+.ct-btn--primary:active:not(:disabled) {
+  background: #cc4e00;
+}
+.ct-btn--secondary:active:not(:disabled) {
+  background: #001a3d;
+}
+/* WhatsApp stays put: darker on press, no movement */
+.ct-btn--wa:active,
+a.ct-btn[href*="wa.me"]:active {
+  transform: none;
+  background: #18a94f;
+}
+a.ct-btn--outline[href*="wa.me"]:active {
+  background: var(--ct-navy);
+  color: #fff;
+}
+/* two-tone ring: visible on orange, white and navy backgrounds */
+.ct-btn:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px var(--ct-navy);
+}
+
+/* reduced motion: show everything immediately, no movement */
+@media (prefers-reduced-motion: reduce) {
+  .ct *,
+  .ct *::before,
+  .ct *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .ct-trip:hover,
+  .ct-btn:active {
+    transform: none !important;
   }
 }
