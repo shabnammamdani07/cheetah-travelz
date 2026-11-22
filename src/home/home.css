@@ -2003,3 +2003,404 @@ a.ct-btn--outline[href*="wa.me"]:active {
     transform: none !important;
   }
 }
+
+/* =====================================================================
+ * FUN LAYER (src/home/Fun.tsx): traveller cursor with gas puffs, header
+ * progress ship, hero clouds parallax, cruise voyage section.
+ * All decorative layers ignore the pointer; reduced motion turns them off.
+ * ===================================================================== */
+
+/* cursor — the class is only added by JS on mouse devices without reduced motion */
+html.ct-fun-cursor .ct,
+html.ct-fun-cursor .ct * {
+  cursor: none;
+}
+html.ct-fun-cursor .ct input,
+html.ct-fun-cursor .ct textarea,
+html.ct-fun-cursor .ct select {
+  cursor: auto;
+}
+.ct-fun {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  overflow: hidden;
+}
+.ct-cursor-guy {
+  position: absolute;
+  left: -20px;
+  top: -6px;
+  width: 40px;
+  height: 54px;
+  opacity: 0;
+  transition: opacity 150ms ease;
+  will-change: transform;
+  filter: drop-shadow(0 4px 6px rgba(1, 46, 105, 0.35));
+}
+.ct-cursor-guy svg {
+  display: block;
+  overflow: visible;
+}
+.ct-cursor-guy.is-on {
+  opacity: 1;
+}
+.ct-cursor-guy.is-hidden {
+  opacity: 0;
+}
+.ct-cursor-guy.is-walking .ct-cursor-guy__leg--a {
+  animation: ct-leg 260ms ease-in-out infinite alternate;
+  transform-origin: 20px 41px;
+}
+.ct-cursor-guy.is-walking .ct-cursor-guy__leg--b {
+  animation: ct-leg 260ms ease-in-out infinite alternate-reverse;
+  transform-origin: 27px 41px;
+}
+.ct-cursor-guy.is-pointing .ct-cursor-guy__arm {
+  transform: rotate(-25deg) translateX(2px);
+  transform-origin: 28px 28px;
+}
+.ct-cursor-guy.is-tooting svg {
+  animation: ct-toot 260ms ease-out;
+}
+@keyframes ct-leg {
+  from {
+    transform: rotate(-22deg);
+  }
+  to {
+    transform: rotate(22deg);
+  }
+}
+@keyframes ct-toot {
+  30% {
+    transform: translateY(-8px) scale(1.12, 0.9);
+  }
+  60% {
+    transform: translateY(0) scale(0.94, 1.08);
+  }
+}
+.ct-puffs {
+  position: absolute;
+  inset: 0;
+}
+.ct-puff {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #e8f7c5, #a9d86e 55%, rgba(140, 190, 80, 0) 72%);
+  animation: ct-puff 800ms ease-out forwards;
+}
+.ct-puff--big {
+  animation-duration: 1100ms;
+  background: radial-gradient(circle at 35% 35%, #f3ffd9, #9bd35a 50%, rgba(120, 180, 60, 0) 72%);
+}
+@keyframes ct-puff {
+  from {
+    transform: translate(0, 0) scale(0.3);
+    opacity: 0.95;
+  }
+  to {
+    transform: translate(var(--dx), var(--dy)) scale(1.6);
+    opacity: 0;
+  }
+}
+.ct-puff-word {
+  position: absolute;
+  font:
+    800 15px/1 "Poppins",
+    system-ui,
+    sans-serif;
+  color: #5e9a1f;
+  text-shadow:
+    0 1px 0 #fff,
+    0 0 6px #fff;
+  animation: ct-word 900ms ease-out forwards;
+  white-space: nowrap;
+}
+@keyframes ct-word {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 6px) rotate(-10deg) scale(0.6);
+  }
+  25% {
+    opacity: 1;
+    transform: translate(-50%, -6px) rotate(-6deg) scale(1.15);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -34px) rotate(4deg) scale(1);
+  }
+}
+
+/* reading-progress ship on a wave line along the bottom of the header */
+.ct-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -10px;
+  height: 10px;
+  pointer-events: none;
+  background: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2224%22 height=%2210%22%3E%3Cpath d=%22M0 6q6-5 12 0t12 0%22 stroke=%22%231f7fb5%22 stroke-width=%222%22 fill=%22none%22 opacity=%22.55%22/%3E%3C/svg%3E")
+    repeat-x;
+  animation: ct-wave-x 1.6s linear infinite;
+}
+.ct-progress-ship {
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  font-size: 22px;
+  line-height: 1;
+  animation: ct-bob 1.8s ease-in-out infinite;
+}
+@keyframes ct-wave-x {
+  to {
+    background-position: 24px 0;
+  }
+}
+@keyframes ct-bob {
+  50% {
+    transform: translateY(-3px) rotate(-4deg);
+  }
+}
+
+/* hero clouds (parallax layer driven by GSAP) */
+.ct-clouds {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.ct-cloud {
+  position: absolute;
+  font-size: 64px;
+  opacity: 0.85;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.15));
+}
+.ct-cloud--a {
+  top: 10%;
+  animation: ct-drift 38s linear infinite;
+}
+.ct-cloud--b {
+  top: 24%;
+  font-size: 44px;
+  animation: ct-drift 52s linear -20s infinite;
+}
+.ct-cloud--c {
+  top: 6%;
+  font-size: 34px;
+  animation: ct-fly 18s linear -4s infinite;
+}
+@keyframes ct-drift {
+  from {
+    left: -15%;
+  }
+  to {
+    left: 110%;
+  }
+}
+@keyframes ct-fly {
+  from {
+    left: -10%;
+    transform: translateY(40px) rotate(-8deg);
+  }
+  to {
+    left: 110%;
+    transform: translateY(-30px) rotate(-8deg);
+  }
+}
+.ct-hero__content,
+.ct-pagehero__content {
+  position: relative;
+  z-index: 1;
+}
+
+/* cruise voyage: tall section, sticky seascape, ship scrubbed by scroll */
+.ct-voyage {
+  position: relative;
+  height: 320vh;
+  background: #0b4f7c;
+}
+.ct-voyage__stage {
+  position: sticky;
+  top: var(--ct-header);
+  height: calc(100svh - var(--ct-header));
+  overflow: hidden;
+}
+.ct-voyage__sky {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    #7cc8f2 0%,
+    #bfe6fb 30%,
+    #ffd9a8 55%,
+    #ff9e6b 75%,
+    #5b3a7a 100%
+  );
+  background-size: 100% 300%;
+  background-position: 0% 0%;
+}
+.ct-voyage__sun {
+  position: absolute;
+  top: 12%;
+  right: 16%;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: #ffd447;
+  box-shadow: 0 0 60px 20px rgba(255, 212, 71, 0.55);
+}
+.ct-voyage__sea {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 31%;
+  background: linear-gradient(180deg, #3f9fd3, #1f7fb5);
+}
+.ct-voyage__gull {
+  position: absolute;
+  top: 30%;
+  left: 10%;
+  font-size: 30px;
+}
+.ct-voyage__far,
+.ct-voyage__mid,
+.ct-voyage__near {
+  position: absolute;
+  left: 0;
+  width: 240%;
+  display: block;
+}
+.ct-voyage__far {
+  bottom: 30%;
+  height: 22%;
+}
+.ct-voyage__mid {
+  bottom: 0;
+  height: 34%;
+}
+.ct-voyage__near {
+  bottom: 0;
+  height: 16%;
+  z-index: 3;
+}
+.ct-voyage__ship {
+  position: absolute;
+  left: -30%;
+  bottom: 12%;
+  width: min(420px, 70vw);
+  z-index: 2;
+}
+.ct-voyage__ship svg {
+  display: block;
+  animation: ct-ship-bob 2.4s ease-in-out infinite;
+}
+@keyframes ct-ship-bob {
+  50% {
+    transform: translateY(-8px) rotate(-1.5deg);
+  }
+}
+.ct-voyage__smoke {
+  position: absolute;
+  left: 63%;
+  top: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  animation: ct-smoke 2.2s ease-out infinite;
+}
+.ct-voyage__smoke--b {
+  left: 75%;
+  animation-delay: 1.1s;
+}
+@keyframes ct-smoke {
+  from {
+    transform: translate(0, 0) scale(0.4);
+    opacity: 0.9;
+  }
+  to {
+    transform: translate(-70px, -90px) scale(2.4);
+    opacity: 0;
+  }
+}
+.ct-voyage__title,
+.ct-voyage__stop,
+.ct-voyage__end {
+  position: absolute;
+  left: 50%;
+  translate: -50% 0;
+  margin: 0;
+  text-align: center;
+  color: #012e69;
+  z-index: 4;
+}
+.ct-voyage__title {
+  top: 14%;
+  width: min(90%, 640px);
+}
+.ct-voyage__title h2 {
+  margin: 4px 0 0;
+  font-size: clamp(30px, 6vw, 58px);
+  line-height: 1.05;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.ct-voyage__title .ct-hero__eyebrow {
+  color: #f15a00;
+}
+.ct-voyage__stop,
+.ct-voyage__end {
+  top: 22%;
+  padding: 12px 22px;
+  border-radius: 999px;
+  background: #fff;
+  font-size: clamp(18px, 3.4vw, 28px);
+  box-shadow: 0 14px 30px -12px rgba(1, 46, 105, 0.5);
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+}
+.ct-voyage__stop strong {
+  color: #f15a00;
+}
+.ct-voyage__end {
+  font-weight: 800;
+}
+@media (max-width: 767px) {
+  .ct-voyage {
+    height: 240vh;
+  }
+  .ct-voyage__sun {
+    width: 70px;
+    height: 70px;
+  }
+  .ct-cloud {
+    font-size: 44px;
+  }
+}
+
+/* reduced motion: no cursor, clouds or progress ship; the voyage becomes a still picture */
+@media (prefers-reduced-motion: reduce) {
+  .ct-fun,
+  .ct-clouds,
+  .ct-progress {
+    display: none;
+  }
+  .ct-voyage {
+    height: auto;
+  }
+  .ct-voyage__stage {
+    position: relative;
+    top: 0;
+    height: 60vh;
+  }
+  .ct-voyage__ship {
+    left: 50%;
+    translate: -50% 0;
+  }
+  .ct-voyage__stop {
+    display: none;
+  }
+}
