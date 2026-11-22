@@ -22,6 +22,7 @@ import { HolidayForm, VehicleForm } from "./EnquiryForms";
 import { SiteFooter, SiteHeader } from "./Layout";
 import { Icon, VehicleArt, WhatsAppIcon } from "./Icon";
 import { track } from "./track";
+import { HeroClouds, Voyage } from "./Fun";
 
 /*
  * Cheetah Travelz homepage — built from "Homepage Design & Mobile Wireframe" v1.0.
@@ -72,6 +73,7 @@ function Hero() {
         fetchPriority="high"
       />
       <div className="ct-hero__shade" />
+      <HeroClouds />
       <div className="ct-wrap ct-hero__content">
         <span className="ct-hero__bar" />
         <p className="ct-hero__eyebrow">Group Trips · Custom Holidays · Cars &amp; Buses</p>
@@ -648,6 +650,7 @@ export default function HomePage() {
         <UpcomingTrips />
         <Holidays />
         <Transport />
+        <Voyage />
         <Why />
         <Memories />
         <Reviews />

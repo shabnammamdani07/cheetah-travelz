@@ -4,6 +4,7 @@ import { Link } from "@tanstack/react-router";
 import { CONTACT, ROUTES, WHATSAPP, img } from "./data";
 import { Icon, WhatsAppIcon } from "./Icon";
 import { track } from "./track";
+import { FartCursor, HeroClouds, ScrollFun } from "./Fun";
 
 /* Shared header (sticky, full-screen navy mobile menu) and footer for every public page. */
 
@@ -146,6 +147,8 @@ export function SiteHeader() {
           </a>
         </div>
       </div>
+      <ScrollFun />
+      <FartCursor />
     </header>
   );
 }
@@ -262,6 +265,7 @@ export function PageShell({
         <section className={`ct-pagehero ${image ? "has-image" : ""}`} aria-labelledby="page-title">
           {image && <img className="ct-pagehero__img" src={img(image)} alt={imageAlt ?? ""} />}
           <div className="ct-pagehero__shade" />
+          <HeroClouds />
           <div className="ct-wrap ct-pagehero__content">
             <span className="ct-hero__bar" />
             {eyebrow && <p className="ct-hero__eyebrow">{eyebrow}</p>}
