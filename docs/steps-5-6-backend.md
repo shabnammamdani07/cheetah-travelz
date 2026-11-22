@@ -45,7 +45,7 @@ EDGE FUNCTIONS (server-side; never trust prices or discounts from the browser):
 
 SECRETS: RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET, RAZORPAY_WEBHOOK_SECRET (test mode first).
 
-Seed: one trip "Goa Group Trip" (slug goa-nov-2026), departure 2026-11-21 to 2026-11-25, label "21–24 Nov 2026", duration "4 Nights / 3 Days", prices: Goa to Goa ₹8,900; Mumbai–Goa–Mumbai by AC Pushback bus ₹10,900; Mumbai–Goa–Mumbai by AC Sleeper bus ₹14,900. Do not invent any other trips, prices, codes or reviews.
+Seed: one trip "Goa Group Trip" (slug goa-nov-2026), departure 2026-11-21 to 2026-11-25, label "21–24 Nov 2026", duration "4 Nights / 3 Days", prices: Goa to Goa ₹8,900; Mumbai–Goa–Mumbai by AC Pushback bus ₹10,900; Mumbai–Goa–Mumbai by AC Sleeper bus ₹14,900. Do not invent any other trips, prices, codes or reviews. This Goa departure has already taken place: keep it as history (it must not appear as upcoming), and make sure admins can add new trips, departures and prices.
 ```
 
 ## After Lovable finishes
