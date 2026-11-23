@@ -16,6 +16,8 @@ export const Route = createFileRoute("/")({
           "Cheetah Travelz: solo group trips, customized holidays for couples, families and private groups, and chauffeur-driven cars & buses from Mumbai. MSME registered.",
       },
       { property: "og:title", content: "Cheetah Travelz — Your Journey. Your Way." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       {
         property: "og:description",
         content:

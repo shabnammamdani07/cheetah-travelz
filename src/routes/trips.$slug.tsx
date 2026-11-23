@@ -11,7 +11,7 @@ export const Route = createFileRoute("/trips/$slug")({
     return t
       ? pageHead(
           `${t.departure.name} · ${t.departure.dateLabel}`,
-          `${t.departure.name}, ${t.departure.dateLabel} (${t.departure.duration}) — itinerary, inclusions, stay, prices from ₹${t.departure.priceFrom.toLocaleString("en-IN")} and booking.`,
+          `${t.departure.name}, ${t.departure.dateLabel} (${t.departure.duration}) — itinerary, meals and ${t.departure.priceFrom === null ? "package enquiries" : `prices from ₹${t.departure.priceFrom.toLocaleString("en-IN")} and booking`}.`,
         )
       : pageHead("Trip not found", "This trip isn't listed any more.", { noindex: true });
   },

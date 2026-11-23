@@ -1,6 +1,8 @@
 import { useState, type FormEvent } from "react";
 
 import { Done, PHONE_PATTERN, SEND_FAILED, lines, saveLead, type Status } from "./EnquiryForms";
+import { confirmTripPayment, startTripPayment } from "@/lib/payments.functions";
+
 import { track } from "./track";
 
 /* ---------- Contact Us: general enquiry with service selection ---------- */
@@ -101,19 +103,58 @@ export function ContactForm({ defaultService = "" }: { defaultService?: string }
   );
 }
 
-/* ---------- Trip page: seat request with optional referral code (captured, verified by the team) ---------- */
+/* ---------- Trip page: pay the reserve amount online with Razorpay ---------- */
+declare global {
+  interface Window {
+    Razorpay?: new (o: Record<string, unknown>) => {
+      open: () => void;
+      on: (e: string, cb: (r: { error: { description: string } }) => void) => void;
+    };
+  }
+}
+
+function loadCheckout(): Promise<void> {
+  if (window.Razorpay) return Promise.resolve();
+  return new Promise((res, rej) => {
+    const s = document.createElement("script");
+    s.src = "https://checkout.razorpay.com/v1/checkout.js";
+    s.onload = () => res();
+    s.onerror = () => rej(new Error("Couldn't load the payment window. Please try again."));
+    document.body.appendChild(s);
+  });
+}
+
 export function TripBookingForm({
+  slug,
   tripName,
   options,
+  reservePerPerson,
 }: {
+  slug: string;
   tripName: string;
   options: { title: string; sub: string; amount: number }[];
+  reservePerPerson: number;
 }) {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
-  const [code, setCode] = useState("");
-  const label = (o: { title: string; sub: string; amount: number }) =>
-    `${o.title} (${o.sub}) — ₹${o.amount.toLocaleString("en-IN")}`;
+  const [seats, setSeats] = useState(1);
+  const [paid, setPaid] = useState(false);
+  const total = reservePerPerson * seats;
+
+  async function confirm(bookingId: string) {
+    try {
+      const r = await confirmTripPayment({ data: { bookingId } });
+      if (r.status === "paid") {
+        setPaid(true);
+        setStatus("done");
+        track("trip_payment_success", { trip: slug });
+        return;
+      }
+    } catch {
+      /* fall through */
+    }
+    setStatus("idle");
+  }
 
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -121,55 +162,58 @@ export function TripBookingForm({
     setStatus("sending");
     setError("");
     try {
-      let r: Response;
-      try {
-        r = await fetch("/api/public/enquiry", {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({
-            name: String(f.get("name") || ""),
-            phone: String(f.get("phone") || ""),
-            email: String(f.get("email") || ""),
-            trip: `Booking request — ${tripName}`,
-            referralCode: String(f.get("referralCode") || ""),
-            message: lines([
-              ["Trip", tripName],
-              ["Option", f.get("option")],
-              ["Seats", f.get("seats")],
-              ["Message", f.get("message")],
-            ]),
-            company: String(f.get("company") || ""),
-          }),
-        });
-      } catch {
-        throw new Error(SEND_FAILED);
-      }
-      const j = (await r.json().catch(() => ({}))) as { error?: string; referralCode?: string };
-      if (!r.ok) throw new Error(r.status < 500 && j.error ? j.error : SEND_FAILED);
-      setCode(j.referralCode || "");
-      setStatus("done");
-      track("trip_booking_request", { trip: tripName });
+      const o = await startTripPayment({
+        data: {
+          slug,
+          option: String(f.get("option") || ""),
+          seats,
+          name: String(f.get("name") || ""),
+          phone: String(f.get("phone") || ""),
+          email: String(f.get("email") || ""),
+          referralCode: String(f.get("referralCode") || ""),
+          message: String(f.get("message") || ""),
+        },
+      });
+      await loadCheckout();
+      const rzp = new window.Razorpay!({
+        key: o.keyId,
+        order_id: o.orderId,
+        amount: o.amount,
+        currency: o.currency,
+        name: "Cheetah Travelz",
+        description: tripName,
+        prefill: {
+          name: String(f.get("name") || ""),
+          contact: String(f.get("phone") || ""),
+          email: String(f.get("email") || ""),
+        },
+        theme: { color: "#f26b1d" },
+        handler: () => confirm(o.bookingId),
+        modal: { ondismiss: () => confirm(o.bookingId) },
+      });
+      rzp.on("payment.failed", (r) => {
+        setError(r.error.description || "Payment failed. Please try again.");
+        setStatus("error");
+      });
+      track("trip_payment_start", { trip: slug, seats });
+      rzp.open();
     } catch (err) {
       setStatus("error");
-      setError((err as Error).message);
+      setError((err as Error).message || SEND_FAILED);
     }
   }
 
-  if (status === "done")
+  if (status === "done" && paid)
     return (
       <Done
-        text={
-          code
-            ? `We've received your seat request and noted referral code ${code}. We'll verify the code and confirm any offer, your seat and payment details shortly.`
-            : "We've received your seat request. Our team will contact you shortly to confirm your seat and payment details."
-        }
+        text={`Payment received — your ${seats > 1 ? `${seats} seats are` : "seat is"} reserved! Our team will WhatsApp you the confirmation and pickup details shortly.`}
         onReset={() => setStatus("idle")}
       />
     );
 
   return (
     <form className="ct-form" onSubmit={submit} aria-labelledby="booking-form-title">
-      <p className="ct-eyebrow">Request your seat</p>
+      <p className="ct-eyebrow">Reserve your seat</p>
       <h3 id="booking-form-title" className="ct-form__title">
         Book this trip
       </h3>
@@ -202,7 +246,7 @@ export function TripBookingForm({
           Option *
           <select name="option" required>
             {options.map((o) => (
-              <option key={label(o)} value={label(o)}>
+              <option key={o.title + o.sub} value={o.title}>
                 {o.title} · ₹{o.amount.toLocaleString("en-IN")}
               </option>
             ))}
@@ -210,9 +254,16 @@ export function TripBookingForm({
         </label>
         <label>
           Seats *
-          <select name="seats" required defaultValue="1">
-            {["1", "2", "3", "4", "5", "6+"].map((n) => (
-              <option key={n}>{n}</option>
+          <select
+            name="seats"
+            required
+            value={seats}
+            onChange={(e) => setSeats(Number(e.target.value))}
+          >
+            {[1, 2, 3, 4, 5, 6].map((n) => (
+              <option key={n} value={n}>
+                {n}
+              </option>
             ))}
           </select>
         </label>
@@ -229,32 +280,26 @@ export function TripBookingForm({
           autoCapitalize="characters"
           spellCheck={false}
           placeholder="e.g. RIYA10"
-          aria-describedby="trip-referral-hint"
         />
       </label>
-      <p id="trip-referral-hint" className="ct-hint">
-        Leave blank to skip. Our team verifies codes before payment — no discount is applied
-        automatically yet.
-      </p>
       <label>
         <span>
           Message <small>(optional)</small>
         </span>
-        <textarea
-          name="message"
-          rows={3}
-          maxLength={800}
-          placeholder="Travelling with friends? Any questions?"
-        />
+        <textarea name="message" rows={3} maxLength={800} placeholder="Any questions?" />
       </label>
-      <input name="company" tabIndex={-1} autoComplete="off" className="ct-hp" aria-hidden="true" />
+      <p className="ct-hint">
+        Pay now: <b>₹{total.toLocaleString("en-IN")}</b> (₹
+        {reservePerPerson.toLocaleString("en-IN")} × {seats}). Secure payment by Razorpay — UPI,
+        cards &amp; net banking.
+      </p>
       {status === "error" && (
         <p className="ct-error" role="alert">
           {error}
         </p>
       )}
       <button className="ct-btn ct-btn--primary ct-btn--block" disabled={status === "sending"}>
-        {status === "sending" ? "Sending…" : "Request My Seat"}
+        {status === "sending" ? "Opening payment…" : `Pay ₹${total.toLocaleString("en-IN")} & Reserve`}
       </button>
     </form>
   );

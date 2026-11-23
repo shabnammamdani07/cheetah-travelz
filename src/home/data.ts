@@ -82,7 +82,7 @@ export type Departure = {
   endDate: string;
   dateLabel: string;
   duration: string;
-  priceFrom: number;
+  priceFrom: number | null;
   priceNote: string;
   departure: string;
   ageGroup?: string; // only when supplied by the client
@@ -94,31 +94,84 @@ export type Departure = {
 
 export const DEPARTURES: Departure[] = [
   {
-    slug: "goa-nov-2026",
-    chip: "Goa",
-    name: "Goa Group Trip",
-    startDate: "2026-11-21",
-    endDate: "2026-11-25",
-    dateLabel: "21–24 Nov 2026",
+    slug: "goa-girls-dec-2026",
+    chip: "Goa · Girls only",
+    name: "Goa Girls Trip",
+    startDate: "2026-12-10",
+    endDate: "2026-12-14",
+    dateLabel: "10–13 Dec 2026",
     duration: "4 Nights / 3 Days",
     priceFrom: 8900,
     priceNote: "Goa to Goa · ₹10,900 from Mumbai",
     departure: "Mumbai departure",
-    image: "beach-pan.jpg",
-    alt: "Goa beach with palm trees and fishing boats",
-    href: "/trips/goa-nov-2026",
+    ageGroup: "Girls only",
+    image: "palolem.jpg",
+    alt: "Palolem beach in South Goa lined with palm trees",
+    href: "/trips/goa-girls-dec-2026",
+  },
+  {
+    slug: "goa-christmas-dec-2026",
+    chip: "Goa · Christmas",
+    name: "Goa Christmas Group Trip",
+    startDate: "2026-12-24",
+    endDate: "2026-12-28",
+    dateLabel: "24–27 Dec 2026",
+    duration: "4 Nights / 3 Days",
+    priceFrom: 8900,
+    priceNote: "Goa to Goa · Mumbai bus options available",
+    departure: "Mumbai departure",
+    image: "yacht.jpg",
+    alt: "Private yacht party on the waters of Goa",
+    href: "/trips/goa-christmas-dec-2026",
+  },
+  {
+    slug: "goa-new-year-2027",
+    chip: "Goa · New Year",
+    name: "Goa New Year Trip",
+    startDate: "2026-12-30",
+    endDate: "2027-01-04",
+    dateLabel: "30 Dec 2026 – 4 Jan 2027",
+    duration: "4 Nights / 5 Days",
+    priceFrom: 14900,
+    priceNote: "₹14,900 per person · 5-day package",
+    departure: "Mumbai departure",
+    image: "pubcrawl.jpg",
+    alt: "Goa nightlife and pub crawl",
+    href: "/trips/goa-new-year-2027",
+  },
+  {
+    slug: "igatpuri-camping",
+    chip: "Igatpuri",
+    name: "Igatpuri Camping Trip",
+    startDate: "2027-01-16",
+    endDate: "2027-01-17",
+    dateLabel: "16–17 Jan 2027",
+    duration: "1 Night / 2 Days",
+    priceFrom: 4300,
+    priceNote: "per person · GAIA Resort & Camping",
+    departure: "Mumbai departure",
+    image: "igt-campfire.jpg",
+    alt: "Friends around a campfire beside tents at sunset in Igatpuri",
+    href: "/trips/igatpuri-camping",
   },
 ];
 
-export function upcomingTrips(today = new Date().toISOString().slice(0, 10)) {
+export function upcomingTrips(today = new Date().toISOString().slice(0, 10), limit = 4) {
   return DEPARTURES.filter((d) => d.startDate >= today)
     .sort((a, b) => a.startDate.localeCompare(b.startDate))
-    .slice(0, 4);
+    .slice(0, limit);
 }
 
 export const AUDIENCES = ["Couples", "Honeymoon", "Families", "Friends", "Private groups"];
 
-export const DESTINATIONS = [
+/*
+ * Destination inspiration tiles + the enquiry form's "Destination" suggestions.
+ * `image` is set only where the client supplied a real photo; tiles without one
+ * render as text, so a place never shows a photo it doesn't have.
+ */
+export type Destination = { name: string; image?: string; alt: string };
+
+export const DESTINATIONS: Destination[] = [
   { name: "Goa", image: "beach-pan.jpg", alt: "Goa beach lined with palm trees" },
   {
     name: "Kashmir",
@@ -130,6 +183,31 @@ export const DESTINATIONS = [
     name: "Rajasthan",
     image: "rajasthan.jpg",
     alt: "Decorated horses passing Hawa Mahal in Jaipur",
+  },
+  {
+    name: "Ladakh",
+    image: "ladakh.jpg",
+    alt: "Monastery on a rocky hill above a Ladakh valley with prayer flags",
+  },
+  {
+    name: "Kutch",
+    image: "kutch.jpg",
+    alt: "Camel cart crossing the white salt desert of Kutch at sunset",
+  },
+  {
+    name: "Ooty",
+    image: "ooty.jpg",
+    alt: "Misty tea gardens on the Nilgiri hills in Ooty",
+  },
+  {
+    name: "Punjab",
+    image: "punjab.jpg",
+    alt: "The Golden Temple in Amritsar glowing at dusk",
+  },
+  {
+    name: "Delhi",
+    image: "delhi.jpg",
+    alt: "India Gate in Delhi at golden hour",
   },
 ];
 

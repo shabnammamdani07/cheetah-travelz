@@ -17,7 +17,7 @@ import { Holidays, Transport } from "./HomePage";
 import { Icon, WhatsAppIcon } from "./Icon";
 import { PageShell } from "./Layout";
 import { ContactForm, TripBookingForm } from "./MoreForms";
-import { getTrip, isPast, PLANNED_TRIPS } from "./trips";
+import { canBookOnline, getTrip, isPast, PLANNED_TRIPS } from "./trips";
 import { track } from "./track";
 import { TERMS } from "@/site/content";
 
@@ -44,7 +44,7 @@ export function TripCard({ t }: { t: Departure }) {
           <Icon name="calendar" size={15} /> {t.dateLabel} <span aria-hidden="true">|</span>{" "}
           {t.duration}
         </p>
-        <p className="ct-trip__price">Starting from {inr(t.priceFrom)}</p>
+        <p className="ct-trip__price">{t.priceFrom === null ? "Enquire for price" : `Starting from ${inr(t.priceFrom)}`}</p>
         <p className="ct-trip__note">{t.priceNote}</p>
         <div className="ct-trip__row">
           <span>
@@ -66,9 +66,16 @@ export function TripCard({ t }: { t: Departure }) {
   );
 }
 
+/* The trip whose full day-by-day plan is shown on the Explore Group Trips page. */
+export const FEATURED_TRIP_SLUG = "goa-girls-dec-2026";
+
 /* ---------- 2 · Solo Group Trips listing ---------- */
 export function TripsPage() {
-  const trips = upcomingTrips(undefined);
+  const trips = upcomingTrips(undefined, Infinity);
+  const featuredTrips = [FEATURED_TRIP_SLUG, "goa-christmas-dec-2026", "goa-new-year-2027"].flatMap((slug) => {
+    const trip = getTrip(slug);
+    return trip ? [trip] : [];
+  });
   return (
     <PageShell
       eyebrow="Solo Group Trips"
@@ -104,6 +111,58 @@ export function TripsPage() {
           )}
         </div>
       </section>
+
+      {featuredTrips.map((featured) => (
+        <section key={featured.departure.slug} className="ct-section" aria-labelledby={`featured-${featured.departure.slug}`}>
+          <div className="ct-wrap">
+            <p className="ct-eyebrow">Featured itinerary</p>
+            <h2 id={`featured-${featured.departure.slug}`} className="ct-h2">
+              {featured.departure.name} · {featured.departure.dateLabel}
+            </h2>
+            <p className="ct-lead">
+              {featured.departure.chip} · {featured.departure.duration} ·{" "}
+              {featured.departure.departure} · {featured.departure.priceFrom === null ? "Enquire for price" : `Starting from ${inr(featured.departure.priceFrom)}`}
+            </p>
+            <ol className="ct-days">
+              {featured.detail.itinerary.map((day) => (
+                <li key={day.num} className="ct-day">
+                  <div className="ct-day__head">
+                    <span className="ct-day__num">{day.num}</span>
+                    <span className="ct-day__date">{day.date}</span>
+                  </div>
+                  <ul className="ct-stops">
+                    {day.stops.map((s) => (
+                      <li key={s.time + s.title}>
+                        <time>{s.time}</time>
+                        <div>
+                          <b>{s.title}</b>
+                          {s.note && (
+                            <span>
+                              {s.note}
+                              {s.selfPaid && <em> (self paid)</em>}
+                            </span>
+                          )}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </li>
+              ))}
+            </ol>
+            <div className="ct-center">
+              <Link
+                to="/trips/$slug"
+                params={{ slug: featured.departure.slug }}
+                className="ct-btn ct-btn--primary"
+                onClick={() => track("trip_detail_click", { trip: featured.departure.slug })}
+              >
+                See Full Trip Details
+              </Link>
+            </div>
+          </div>
+        </section>
+      ))}
+
       <section className="ct-section" aria-labelledby="planned-title">
         <div className="ct-wrap">
           <p className="ct-eyebrow">Coming up</p>
@@ -149,6 +208,7 @@ export function TripPage({ slug }: { slug: string }) {
   if (!trip) return <NotFoundTrip />;
   const { departure: d, detail } = trip;
   const past = isPast(d);
+  const onlineBooking = canBookOnline(detail);
   const bookWa = wa(`Hi Cheetah Travelz! I want to book the ${d.name} (${d.dateLabel}).`);
   return (
     <PageShell
@@ -181,23 +241,11 @@ export function TripPage({ slug }: { slug: string }) {
             </div>
             <div>
               <dt>Price</dt>
-              <dd>From {inr(d.priceFrom)}</dd>
+              <dd>{d.priceFrom === null ? "Enquire for price" : `From ${inr(d.priceFrom)}`}</dd>
             </div>
           </dl>
 
-          <div className="ct-trip-layout">
-            <div className="ct-trip-main">
-              <section aria-labelledby="ov-title">
-                <h2 id="ov-title" className="ct-h2 ct-h2--sm">
-                  Overview
-                </h2>
-                <p>{detail.summary}</p>
-                <h3 className="ct-h3 ct-mt">
-                  <Icon name="pin" size={18} /> Departure &amp; pickup
-                </h3>
-                <p>{detail.pickup}</p>
-              </section>
-
+          <div className="ct-trip-main">
               <section aria-labelledby="it-title" className="ct-block">
                 <h2 id="it-title" className="ct-h2 ct-h2--sm">
                   Day-by-Day Itinerary
@@ -251,11 +299,11 @@ export function TripPage({ slug }: { slug: string }) {
                 <h2 id="stay-title" className="ct-h2 ct-h2--sm">
                   Stay, Meals &amp; Transport
                 </h2>
-                <div className="ct-stay">
+                {detail.stayImages.length > 0 && <div className="ct-stay">
                   {detail.stayImages.slice(0, 4).map((s) => (
                     <img key={s.src} src={img(s.src)} alt={s.alt} loading="lazy" />
                   ))}
-                </div>
+                </div>}
                 <ul className="ct-ticks">
                   <li>
                     <b>Stay:</b> {detail.stayText}
@@ -286,6 +334,7 @@ export function TripPage({ slug }: { slug: string }) {
                   </div>
                   <div>
                     <h3 className="ct-h3">Not included</h3>
+                    {detail.excluded.length === 0 && <p>Contact us for confirmed exclusions and any additional charges.</p>}
                     <ul className="ct-crosses">
                       {detail.excluded.map(([b, t]) => (
                         <li key={b}>
@@ -297,7 +346,59 @@ export function TripPage({ slug }: { slug: string }) {
                 </div>
               </section>
 
-              <section aria-labelledby="terms-title" className="ct-block">
+              <section aria-labelledby="price-title" className="ct-block">
+                <h2 id="price-title" className="ct-h2 ct-h2--sm">
+                  Trip Price
+                </h2>
+                {detail.priceOptions.length > 0 && <ul className="ct-prices ct-prices--wide">
+                  {detail.priceOptions.map((o) => (
+                    <li key={o.title + o.sub}>
+                      <span>
+                        <b>{o.title}</b>
+                        <small>{o.sub}</small>
+                      </span>
+                      <strong>{inr(o.amount)}</strong>
+                    </li>
+                  ))}
+                </ul>}
+                <p className="ct-hint">
+                  {detail.reserveLine ?? (<>Reserve with <b>{detail.reserveAmount}</b> per person · balance at departure</>)}
+                </p>
+              </section>
+
+            <section aria-label="Book this trip" className="ct-block">
+              <div className="ct-card ct-bookcard">
+                <p className="ct-eyebrow">Book this trip</p>
+                <p className="ct-bookcard__reserve">
+                  {detail.reserveLine ?? (<>Reserve with <b>{detail.reserveAmount}</b> per person · balance at departure</>)}
+                </p>
+                {!past && (
+                  <div className="ct-bookcard__actions">
+                    {onlineBooking && <a
+                      href="#book"
+                      className="ct-btn ct-btn--primary"
+                      onClick={() => track("trip_book_click", { trip: d.slug })}
+                    >
+                      Book Now
+                    </a>}
+                    <a
+                      href={bookWa}
+                      target="_blank"
+                      rel="noopener"
+                      className="ct-btn ct-btn--outline"
+                      onClick={() =>
+                        track("whatsapp_click", { location: "trip_page", trip: d.slug })
+                      }
+                    >
+                      <WhatsAppIcon size={18} /> {onlineBooking ? "Book on WhatsApp" : "Enquire on WhatsApp"}
+                    </a>
+                  </div>
+                )}
+                <p className="ct-hint">{detail.paymentNote}</p>
+              </div>
+            </section>
+
+            <section aria-labelledby="terms-title" className="ct-block">
                 <h2 id="terms-title" className="ct-h2 ct-h2--sm">
                   Terms, Cancellation &amp; Refunds
                 </h2>
@@ -312,59 +413,17 @@ export function TripPage({ slug }: { slug: string }) {
                   ))}
                 </div>
               </section>
-            </div>
-
-            <aside className="ct-trip-aside" aria-label="Book this trip">
-              <div className="ct-card ct-bookcard">
-                <p className="ct-eyebrow">Trip price</p>
-                <ul className="ct-prices">
-                  {detail.priceOptions.map((o) => (
-                    <li key={o.title + o.sub}>
-                      <span>
-                        <b>{o.title}</b>
-                        <small>{o.sub}</small>
-                      </span>
-                      <strong>{inr(o.amount)}</strong>
-                    </li>
-                  ))}
-                </ul>
-                <p className="ct-bookcard__reserve">
-                  Reserve with <b>{detail.reserveAmount}</b> per person · balance at departure
-                </p>
-                {!past && (
-                  <>
-                    <a
-                      href="#book"
-                      className="ct-btn ct-btn--primary ct-btn--block"
-                      onClick={() => track("trip_book_click", { trip: d.slug })}
-                    >
-                      Book Now
-                    </a>
-                    <a
-                      href={bookWa}
-                      target="_blank"
-                      rel="noopener"
-                      className="ct-btn ct-btn--outline ct-btn--block"
-                      onClick={() =>
-                        track("whatsapp_click", { location: "trip_page", trip: d.slug })
-                      }
-                    >
-                      <WhatsAppIcon size={18} /> Book on WhatsApp
-                    </a>
-                  </>
-                )}
-                <p className="ct-hint">{detail.paymentNote}</p>
-              </div>
-            </aside>
           </div>
 
-          {!past && (
+          {!past && onlineBooking && (
             <section
               id="book"
               className="ct-block ct-formpanel ct-bookform"
               aria-label="Booking request"
             >
               <TripBookingForm
+                slug={d.slug}
+                reservePerPerson={detail.reservePerPerson}
                 tripName={`${d.name} (${d.dateLabel})`}
                 options={detail.priceOptions}
               />

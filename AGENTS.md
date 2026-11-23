@@ -28,3 +28,9 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+- Trip payments: amounts computed server-side from src/home/trips.ts reservePerPerson; bookings are marked paid only by confirmBooking (re-reads the Razorpay order) — never trust the browser or webhook body.
+- Trip notifications share one root-mounted component and sessionStorage state; public booking signals come only from the bounded anonymous RPC, keeping customer data private.
+- Trip-specific early-bird prices resolve in getTrip using India-local dates and an exclusive cutoff, so displayed options and server-side booking validation share the same price.
+- Unpriced trips use null departure prices and empty price options; canBookOnline gates payment controls until a positive advance and verified options exist. Explore Group Trips lists all upcoming departures; the homepage keeps its four-trip preview.
+- Generate itinerary terms through one shared formatter, with trip-specific payment amounts, meals and camping accommodation, so policies remain consistent without misrepresenting package inclusions.

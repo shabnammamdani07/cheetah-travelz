@@ -8,10 +8,10 @@ export const CONTACT = {
   google: "https://g.co/kgs/xeWmL6X",
 };
 
-export const WHATSAPP_BOOK = `https://wa.me/${CONTACT.phoneRaw}?text=${encodeURIComponent("Hi Cheetah Travelz! I want to book the Goa trip (21-24 Nov)")}`;
+export const WHATSAPP_BOOK = `https://wa.me/${CONTACT.phoneRaw}?text=${encodeURIComponent("Hi Cheetah Travelz! I want to book a Goa group trip")}`;
 
 export const TRIP = {
-  dates: "21st – 24th NOV",
+  dates: "10th – 13th DEC",
   length: "4 Nights / 3 Days",
   reserve: "₹2,900",
 };
@@ -57,7 +57,7 @@ export const DESTINATIONS: {
     blurb: "Yacht party, water sports, sunset kayaking and nights that end at 4 AM.",
     hero: "beach-pan.jpg",
     card: "yacht.jpg",
-    next: "21–24 Nov",
+    next: "10–13 Dec",
   },
   {
     word: "ANYWHERE",
@@ -125,126 +125,6 @@ export type Day = {
   stops: Stop[];
   end?: boolean;
 };
-
-export const ITINERARY: Day[] = [
-  {
-    num: "DAY 0",
-    date: "21st November · Saturday",
-    images: [{ src: "aguada.jpg", alt: "Fort Aguada at sunset" }],
-    stops: [
-      {
-        time: "10:00 PM",
-        title: "Depart from Mumbai",
-        note: "Get comfy and excited for an amazing Goa getaway!",
-      },
-    ],
-  },
-  {
-    num: "DAY 1",
-    date: "22nd November · Sunday",
-    images: [
-      { src: "oldgoa.jpg", alt: "Old Goa churches and Fontainhas" },
-      { src: "yacht.jpg", alt: "Private yacht party at sunset" },
-      { src: "pubcrawl.jpg", alt: "Pub crawl at night in North Goa" },
-    ],
-    stops: [
-      {
-        time: "10:00 AM",
-        title: "Arrival in North Goa",
-        note: "Warm welcome, hotel check-in & freshen up",
-      },
-      { time: "12:30 PM", title: "Lunch at hotel" },
-      {
-        time: "01:00 PM",
-        title: "Old Goa & Panjim",
-        note: "Basilica of Bom Jesus · Se Cathedral · Fontainhas · Café hopping",
-        selfPaid: true,
-      },
-      {
-        time: "05:30 PM",
-        title: "Private Yacht Party",
-        note: "Open waters, sunset views, music & party vibes",
-        hot: true,
-      },
-      { time: "08:00 PM", title: "Back to hotel", note: "Rest up — the night has just begun" },
-      {
-        time: "10:00 PM",
-        title: "Let the pub crawl begin!",
-        note: "Vagator's buzzing pubs & clubs till dawn",
-        selfPaid: true,
-        hot: true,
-      },
-      { time: "04:00 AM", title: "Back to hotel" },
-    ],
-  },
-  {
-    num: "DAY 2",
-    date: "23rd November · Monday",
-    images: [
-      { src: "palolem.jpg", alt: "Palolem beach coastline" },
-      { src: "kayak.jpg", alt: "Kayaking at sunset" },
-      { src: "club.jpg", alt: "Baga beach club night" },
-    ],
-    stops: [
-      { time: "09:00 AM", title: "Breakfast", note: "Fuel up for a day full of fun" },
-      {
-        time: "10:00 AM",
-        title: "South Goa sightseeing",
-        note: "Cabo de Rama — rocky cliffs over the Arabian Sea · Palolem — golden sands & palms",
-      },
-      {
-        time: "Sunset",
-        title: "Kayaking & sunset",
-        note: "Paddle Palolem's serene waters as the sun goes down",
-        hot: true,
-      },
-      { time: "08:30 PM", title: "Back to hotel" },
-      { time: "10:00 PM", title: "Candolim beach", note: "Sheesha, snacks & music-filled vibes" },
-      {
-        time: "11:30 PM",
-        title: "Baga beach & Tito's Lane",
-        note: "Beach clubs, beats, no tomorrow",
-        selfPaid: true,
-        hot: true,
-      },
-      { time: "03:00 AM", title: "Back to hotel" },
-    ],
-  },
-  {
-    num: "DAY 3",
-    date: "24th November · Tuesday",
-    images: [
-      { src: "banana.jpg", alt: "Banana ride" },
-      { src: "jetski.jpg", alt: "Jet ski" },
-      { src: "parasail.jpg", alt: "Parasailing over Goa" },
-    ],
-    stops: [
-      { time: "08:00 AM", title: "Breakfast" },
-      { time: "09:00 AM", title: "Check-out", note: "Pack up — the trip's not over yet!" },
-      {
-        time: "10:00 AM",
-        title: "Water sports",
-        note: "Banana Ride · Bumper Ride · Jet Ski · Para Sailing",
-        hot: true,
-      },
-      { time: "04:00 PM", title: "Lunch & freshen up" },
-      { time: "05:30 PM", title: "Depart for Mumbai" },
-    ],
-  },
-  {
-    num: "DAY 4",
-    date: "25th November · Wednesday",
-    images: [],
-    end: true,
-    stops: [
-      {
-        time: "05:30 AM",
-        title: "Arrival in Mumbai",
-        note: "…with a camera roll full of memories.",
-      },
-    ],
-  },
-];
 
 export const SPORTS = [
   {

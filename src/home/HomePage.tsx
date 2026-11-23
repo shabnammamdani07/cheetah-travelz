@@ -22,7 +22,6 @@ import { HolidayForm, VehicleForm } from "./EnquiryForms";
 import { SiteFooter, SiteHeader } from "./Layout";
 import { Icon, VehicleArt, WhatsAppIcon } from "./Icon";
 import { track } from "./track";
-import { HeroClouds, Voyage } from "./Fun";
 
 /*
  * Cheetah Travelz homepage — built from "Homepage Design & Mobile Wireframe" v1.0.
@@ -39,7 +38,7 @@ const inr = (n: number) => "₹" + n.toLocaleString("en-IN");
 
 function scrollToId(hash: string) {
   const el = document.querySelector(hash);
-  if (el) el.scrollIntoView({ behavior: "auto", block: "start" });
+  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 /* ---------------- 2 · Hero ---------------- */
@@ -73,7 +72,6 @@ function Hero() {
         fetchPriority="high"
       />
       <div className="ct-hero__shade" />
-      <HeroClouds />
       <div className="ct-wrap ct-hero__content">
         <span className="ct-hero__bar" />
         <p className="ct-hero__eyebrow">Group Trips · Custom Holidays · Cars &amp; Buses</p>
@@ -181,7 +179,7 @@ function UpcomingTrips() {
                     <Icon name="calendar" size={15} /> {t.dateLabel}{" "}
                     <span aria-hidden="true">|</span> {t.duration}
                   </p>
-                  <p className="ct-trip__price">Starting from {inr(t.priceFrom)}</p>
+                  <p className="ct-trip__price">{t.priceFrom === null ? "Enquire for price" : `Starting from ${inr(t.priceFrom)}`}</p>
                   <p className="ct-trip__note">{t.priceNote}</p>
                   <div className="ct-trip__row">
                     <span>
@@ -222,7 +220,7 @@ export function Holidays({ compact = false }: { compact?: boolean } = {}) {
   const [destination, setDestination] = useState("");
   const formRef = useRef<HTMLFormElement>(null);
   const focusForm = () => {
-    formRef.current?.scrollIntoView({ behavior: "auto", block: "start" });
+    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     window.setTimeout(
       () =>
         formRef.current
@@ -272,7 +270,7 @@ export function Holidays({ compact = false }: { compact?: boolean } = {}) {
               <button
                 key={d.name}
                 type="button"
-                className="ct-dest"
+                className={d.image ? "ct-dest" : "ct-dest ct-dest--text"}
                 onClick={() => {
                   setDestination(d.name);
                   track("holiday_destination_click", { destination: d.name });
@@ -280,7 +278,7 @@ export function Holidays({ compact = false }: { compact?: boolean } = {}) {
                 }}
                 aria-label={`Plan a holiday to ${d.name}`}
               >
-                <img src={img(d.image)} alt={d.alt} loading="lazy" />
+                {d.image && <img src={img(d.image)} alt={d.alt} loading="lazy" />}
                 <span>{d.name}</span>
               </button>
             ))}
@@ -314,7 +312,7 @@ export function Transport({ compact = false }: { compact?: boolean } = {}) {
   const [vehicle, setVehicle] = useState("");
   const formRef = useRef<HTMLFormElement>(null);
   const focusForm = () => {
-    formRef.current?.scrollIntoView({ behavior: "auto", block: "start" });
+    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     window.setTimeout(
       () =>
         formRef.current
@@ -472,7 +470,7 @@ function Reviews() {
   const goTo = (i: number) => {
     const el = rail.current;
     const card = el?.children[i] as HTMLElement | undefined;
-    if (el && card) el.scrollTo({ left: card.offsetLeft - el.offsetLeft, behavior: "auto" });
+    if (el && card) el.scrollTo({ left: card.offsetLeft - el.offsetLeft, behavior: "smooth" });
   };
   return (
     <section className="ct-section ct-section--grey" aria-labelledby="reviews-title">
@@ -650,7 +648,6 @@ export default function HomePage() {
         <UpcomingTrips />
         <Holidays />
         <Transport />
-        <Voyage />
         <Why />
         <Memories />
         <Reviews />
